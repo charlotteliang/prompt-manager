@@ -18,10 +18,11 @@ import {
 
 // Check if Firebase is properly configured
 const isFirebaseConfigured = () => {
+  // Check if we're using the real Firebase config (not placeholder values)
   const config = {
-    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-    authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+    apiKey: "AIzaSyDzYTg0iP4ij6qClXXf7lSX658Rn9ZwgG4",
+    authDomain: "prompt-manager-2024.firebaseapp.com",
+    projectId: "prompt-manager-2024",
   };
   
   return config.apiKey && config.authDomain && config.projectId && 
@@ -55,7 +56,10 @@ export const storageService = {
       return id;
     }
     try {
-      return await promptService.add(prompt);
+      // Always generate an id and pass it to promptService.add
+      const id = crypto.randomUUID();
+      await promptService.add({ ...prompt, id });
+      return id;
     } catch (error) {
       console.warn('Firebase failed, falling back to localStorage:', error);
       const id = crypto.randomUUID();
@@ -78,12 +82,14 @@ export const storageService = {
   },
 
   async deletePrompt(promptId: string): Promise<void> {
+    console.log('StorageService: Attempting to delete prompt with ID:', promptId);
     if (useLocalStorage) {
       deleteLocalPrompt(promptId);
       return;
     }
     try {
       await promptService.delete(promptId);
+      console.log('StorageService: Successfully deleted prompt with ID:', promptId);
     } catch (error) {
       console.warn('Firebase failed, falling back to localStorage:', error);
       deleteLocalPrompt(promptId);
@@ -131,7 +137,10 @@ export const storageService = {
       return id;
     }
     try {
-      return await projectService.add(project);
+      // Always generate an id and pass it to projectService.add
+      const id = crypto.randomUUID();
+      await projectService.add({ ...project, id });
+      return id;
     } catch (error) {
       console.warn('Firebase failed, falling back to localStorage:', error);
       const id = crypto.randomUUID();
@@ -154,12 +163,14 @@ export const storageService = {
   },
 
   async deleteProject(projectId: string): Promise<void> {
+    console.log('StorageService: Attempting to delete project with ID:', projectId);
     if (useLocalStorage) {
       deleteLocalProject(projectId);
       return;
     }
     try {
       await projectService.delete(projectId);
+      console.log('StorageService: Successfully deleted project with ID:', projectId);
     } catch (error) {
       console.warn('Firebase failed, falling back to localStorage:', error);
       deleteLocalProject(projectId);
@@ -186,7 +197,10 @@ export const storageService = {
       return id;
     }
     try {
-      return await categoryService.add(category);
+      // Always generate an id and pass it to categoryService.add
+      const id = crypto.randomUUID();
+      await categoryService.add({ ...category, id });
+      return id;
     } catch (error) {
       console.warn('Firebase failed, falling back to localStorage:', error);
       const id = crypto.randomUUID();

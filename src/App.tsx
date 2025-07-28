@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Prompt, Project, Category } from './types';
 import { storageService } from './services/storageService';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import PromptCard from './components/PromptCard';
 import PromptForm from './components/PromptForm';
 import ProjectForm from './components/ProjectForm';
 import CategoryForm from './components/CategoryForm';
 import Sidebar from './components/Sidebar';
-import { Plus, MessageSquare, CheckCircle } from 'lucide-react';
+import LoginForm from './components/LoginForm';
+import { Plus, MessageSquare, CheckCircle, LogOut, User } from 'lucide-react';
 
-function App() {
+function AppContent() {
+  const { currentUser, logout } = useAuth();
   const [prompts, setPrompts] = useState<Prompt[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -32,6 +35,8 @@ function App() {
 
   // Load data from storage on component mount
   useEffect(() => {
+    if (!currentUser) return; // Don't load data if not authenticated
+    
     const loadData = async () => {
       const [promptsData, projectsData, categoriesData] = await Promise.all([
         storageService.getPrompts(),
@@ -43,7 +48,20 @@ function App() {
       setCategories(categoriesData);
     };
     loadData();
-  }, []);
+  }, [currentUser]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Failed to logout:', error);
+    }
+  };
+
+  // Show login form if user is not authenticated
+  if (!currentUser) {
+    return <LoginForm />;
+  }
 
   // Filter prompts based on current filters
   const filteredPrompts = prompts.filter(prompt => {
@@ -123,6 +141,27 @@ function App() {
     }
   };
 
+  const handleDeleteProject = async (projectId: string) => {
+    if (window.confirm('Are you sure you want to delete this project? This will also delete all prompts in this project.')) {
+      await storageService.deleteProject(projectId);
+      const updatedProjects = await storageService.getProjects();
+      const updatedPrompts = await storageService.getPrompts();
+      setProjects(updatedProjects);
+      setPrompts(updatedPrompts);
+      
+      // Reset selection if the deleted project was selected
+      const deletedProject = projects.find(p => p.id === projectId);
+      if (deletedProject && selectedProject === deletedProject.name) {
+        setSelectedProject('');
+        setSelectedCategory('');
+      }
+    }
+  };
+
+  const handleEditProject = (project: Project) => {
+    setEditingProject(project);
+    setShowProjectForm(true);
+  };
 
 
   // Category handlers
@@ -151,13 +190,28 @@ function App() {
             <MessageSquare className="w-8 h-8 text-primary-600" />
             <h1 className="text-2xl font-bold text-secondary-900">Prompt Manager</h1>
           </div>
-          <button
-            onClick={() => setShowPromptForm(true)}
-            className="btn-primary flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            New Prompt
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setShowPromptForm(true)}
+              className="btn-primary flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              New Prompt
+            </button>
+            <div className="flex items-center gap-3 pl-4 border-l border-secondary-200">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4 text-secondary-400" />
+                <span className="text-secondary-700 text-sm">{currentUser.displayName || currentUser.email}</span>
+              </div>
+              <button 
+                onClick={handleLogout} 
+                className="text-secondary-600 hover:text-secondary-800 p-2 hover:bg-secondary-100 rounded-lg transition-colors"
+                title="Logout"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -175,6 +229,8 @@ function App() {
           onToggleFavorites={() => setShowFavorites(!showFavorites)}
           onSearchChange={setSearchQuery}
           onAddProject={() => setShowProjectForm(true)}
+          onEditProject={handleEditProject}
+          onDeleteProject={handleDeleteProject}
           onAddCategory={() => setShowCategoryForm(true)}
         />
 
@@ -284,6 +340,14 @@ function App() {
         </div>
       )}
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

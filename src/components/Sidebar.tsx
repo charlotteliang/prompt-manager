@@ -1,6 +1,6 @@
 import React from 'react';
 import { Project, Category } from '../types';
-import { Plus, Folder, Tag, Star, Search } from 'lucide-react';
+import { Plus, Folder, Tag, Star, Search, Edit, Trash2 } from 'lucide-react';
 
 interface SidebarProps {
   projects: Project[];
@@ -14,6 +14,8 @@ interface SidebarProps {
   onToggleFavorites: () => void;
   onSearchChange: (query: string) => void;
   onAddProject: () => void;
+  onEditProject: (project: Project) => void;
+  onDeleteProject: (projectId: string) => void;
   onAddCategory: () => void;
 }
 
@@ -29,6 +31,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   onToggleFavorites,
   onSearchChange,
   onAddProject,
+  onEditProject,
+  onDeleteProject,
   onAddCategory,
 }) => {
   const projectCategories = categories.filter(cat => 
@@ -93,21 +97,47 @@ const Sidebar: React.FC<SidebarProps> = ({
           </button>
           
           {projects.map(project => (
-            <button
+            <div
               key={project.id}
-              onClick={() => onProjectSelect(project.name)}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors ${
+              className={`group flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
                 selectedProject === project.name 
                   ? 'bg-primary-100 text-primary-700' 
                   : 'text-secondary-600 hover:bg-secondary-100'
               }`}
             >
-              <div 
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: project.color }}
-              />
-              <span className="font-medium truncate">{project.name}</span>
-            </button>
+              <button
+                onClick={() => onProjectSelect(project.name)}
+                className="flex-1 flex items-center gap-3 text-left"
+              >
+                <div 
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: project.color }}
+                />
+                <span className="font-medium truncate">{project.name}</span>
+              </button>
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEditProject(project);
+                  }}
+                  className="p-1 hover:bg-secondary-200 rounded transition-colors"
+                  title="Edit project"
+                >
+                  <Edit className="w-3 h-3 text-secondary-400" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteProject(project.id);
+                  }}
+                  className="p-1 hover:bg-red-200 rounded transition-colors"
+                  title="Delete project"
+                >
+                  <Trash2 className="w-3 h-3 text-red-400" />
+                </button>
+              </div>
+            </div>
           ))}
         </div>
       </div>

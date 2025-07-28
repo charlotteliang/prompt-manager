@@ -1,7 +1,6 @@
 import { 
   collection, 
   doc, 
-  addDoc, 
   updateDoc, 
   deleteDoc, 
   getDocs, 
@@ -11,9 +10,10 @@ import {
   orderBy,
   onSnapshot,
   Timestamp,
-  writeBatch
+  writeBatch,
+  setDoc
 } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { auth, db } from '../config/firebase';
 import { Prompt, Project, Category } from '../types';
 
 // Collection names
@@ -21,6 +21,15 @@ const COLLECTIONS = {
   PROMPTS: 'prompts',
   PROJECTS: 'projects',
   CATEGORIES: 'categories'
+};
+
+// Get current user ID
+const getCurrentUserId = (): string => {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error('User not authenticated');
+  }
+  return user.uid;
 };
 
 // Convert Firestore timestamp to Date
@@ -36,11 +45,17 @@ const convertToTimestamp = (date: Date): Timestamp => {
   return Timestamp.fromDate(date);
 };
 
+
 // Prompt Services
 export const promptService = {
-  // Get all prompts
+  // Get all prompts for current user
   async getAll(): Promise<Prompt[]> {
-    const querySnapshot = await getDocs(collection(db, COLLECTIONS.PROMPTS));
+    const userId = getCurrentUserId();
+    const q = query(
+      collection(db, COLLECTIONS.PROMPTS),
+      where('userId', '==', userId)
+    );
+    const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
@@ -49,10 +64,12 @@ export const promptService = {
     })) as Prompt[];
   },
 
-  // Get prompts by project
+  // Get prompts by project for current user
   async getByProject(projectName: string): Promise<Prompt[]> {
+    const userId = getCurrentUserId();
     const q = query(
       collection(db, COLLECTIONS.PROMPTS),
+      where('userId', '==', userId),
       where('project', '==', projectName)
     );
     const querySnapshot = await getDocs(q);
@@ -64,10 +81,12 @@ export const promptService = {
     })) as Prompt[];
   },
 
-  // Get favorite prompts
+  // Get favorite prompts for current user
   async getFavorites(): Promise<Prompt[]> {
+    const userId = getCurrentUserId();
     const q = query(
       collection(db, COLLECTIONS.PROMPTS),
+      where('userId', '==', userId),
       where('isFavorite', '==', true)
     );
     const querySnapshot = await getDocs(q);
@@ -79,7 +98,7 @@ export const promptService = {
     })) as Prompt[];
   },
 
-  // Search prompts
+  // Search prompts for current user
   async search(searchTerm: string): Promise<Prompt[]> {
     const allPrompts = await this.getAll();
     const lowerSearchTerm = searchTerm.toLowerCase();
@@ -92,13 +111,15 @@ export const promptService = {
   },
 
   // Add new prompt
-  async add(prompt: Omit<Prompt, 'id'>): Promise<string> {
-    const docRef = await addDoc(collection(db, COLLECTIONS.PROMPTS), {
+  async add(prompt: Omit<Prompt, 'id'> & { id: string }): Promise<string> {
+    const userId = getCurrentUserId();
+    await setDoc(doc(collection(db, COLLECTIONS.PROMPTS), prompt.id), {
       ...prompt,
+      userId,
       createdAt: convertToTimestamp(prompt.createdAt),
       updatedAt: convertToTimestamp(prompt.updatedAt)
     });
-    return docRef.id;
+    return prompt.id;
   },
 
   // Update prompt
@@ -113,8 +134,15 @@ export const promptService = {
 
   // Delete prompt
   async delete(id: string): Promise<void> {
-    const docRef = doc(db, COLLECTIONS.PROMPTS, id);
-    await deleteDoc(docRef);
+    console.log('Attempting to delete prompt with ID:', id);
+    try {
+      const docRef = doc(db, COLLECTIONS.PROMPTS, id);
+      await deleteDoc(docRef);
+      console.log('Successfully deleted prompt with ID:', id);
+    } catch (error) {
+      console.error('Error deleting prompt:', error);
+      throw error;
+    }
   },
 
   // Toggle favorite
@@ -134,8 +162,10 @@ export const promptService = {
 
   // Real-time listener for prompts
   subscribeToPrompts(callback: (prompts: Prompt[]) => void) {
+    const userId = getCurrentUserId();
     const q = query(
       collection(db, COLLECTIONS.PROMPTS),
+      where('userId', '==', userId),
       orderBy('updatedAt', 'desc')
     );
     
@@ -153,9 +183,14 @@ export const promptService = {
 
 // Project Services
 export const projectService = {
-  // Get all projects
+  // Get all projects for current user
   async getAll(): Promise<Project[]> {
-    const querySnapshot = await getDocs(collection(db, COLLECTIONS.PROJECTS));
+    const userId = getCurrentUserId();
+    const q = query(
+      collection(db, COLLECTIONS.PROJECTS),
+      where('userId', '==', userId)
+    );
+    const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
@@ -164,12 +199,14 @@ export const projectService = {
   },
 
   // Add new project
-  async add(project: Omit<Project, 'id'>): Promise<string> {
-    const docRef = await addDoc(collection(db, COLLECTIONS.PROJECTS), {
+  async add(project: Omit<Project, 'id'> & { id: string }): Promise<string> {
+    const userId = getCurrentUserId();
+    await setDoc(doc(collection(db, COLLECTIONS.PROJECTS), project.id), {
       ...project,
+      userId,
       createdAt: convertToTimestamp(project.createdAt)
     });
-    return docRef.id;
+    return project.id;
   },
 
   // Update project
@@ -180,34 +217,57 @@ export const projectService = {
 
   // Delete project and all associated prompts
   async delete(id: string): Promise<void> {
-    const batch = writeBatch(db);
-    
-    // Get project name first
-    const projectDoc = await getDoc(doc(db, COLLECTIONS.PROJECTS, id));
-    if (!projectDoc.exists()) return;
-    
-    const projectName = projectDoc.data().name;
-    
-    // Delete all prompts in this project
-    const promptsQuery = query(
-      collection(db, COLLECTIONS.PROMPTS),
-      where('project', '==', projectName)
-    );
-    const promptsSnapshot = await getDocs(promptsQuery);
-    promptsSnapshot.docs.forEach(doc => {
-      batch.delete(doc.ref);
-    });
-    
-    // Delete the project
-    batch.delete(doc(db, COLLECTIONS.PROJECTS, id));
-    
-    await batch.commit();
+    console.log('ProjectService: Attempting to delete project with ID:', id);
+    try {
+      const userId = getCurrentUserId();
+      const batch = writeBatch(db);
+      
+      // Get project name first
+      const projectDoc = await getDoc(doc(db, COLLECTIONS.PROJECTS, id));
+      if (!projectDoc.exists()) {
+        console.log('ProjectService: Project not found with ID:', id);
+        return;
+      }
+      
+      const projectData = projectDoc.data();
+      // Verify user owns this project
+      if (projectData.userId !== userId) {
+        throw new Error('Unauthorized: Cannot delete project owned by another user');
+      }
+      
+      const projectName = projectData.name;
+      console.log('ProjectService: Found project name:', projectName);
+      
+      // Delete all prompts in this project for this user
+      const promptsQuery = query(
+        collection(db, COLLECTIONS.PROMPTS),
+        where('userId', '==', userId),
+        where('project', '==', projectName)
+      );
+      const promptsSnapshot = await getDocs(promptsQuery);
+      console.log('ProjectService: Found', promptsSnapshot.docs.length, 'prompts to delete');
+      
+      promptsSnapshot.docs.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      
+      // Delete the project
+      batch.delete(doc(db, COLLECTIONS.PROJECTS, id));
+      
+      await batch.commit();
+      console.log('ProjectService: Successfully deleted project and associated prompts');
+    } catch (error) {
+      console.error('ProjectService: Error deleting project:', error);
+      throw error;
+    }
   },
 
   // Real-time listener for projects
   subscribeToProjects(callback: (projects: Project[]) => void) {
+    const userId = getCurrentUserId();
     const q = query(
       collection(db, COLLECTIONS.PROJECTS),
+      where('userId', '==', userId),
       orderBy('createdAt', 'desc')
     );
     
@@ -224,19 +284,26 @@ export const projectService = {
 
 // Category Services
 export const categoryService = {
-  // Get all categories
+  // Get all categories for current user
   async getAll(): Promise<Category[]> {
-    const querySnapshot = await getDocs(collection(db, COLLECTIONS.CATEGORIES));
+    const userId = getCurrentUserId();
+    const q = query(
+      collection(db, COLLECTIONS.CATEGORIES),
+      where('userId', '==', userId)
+    );
+    const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     })) as Category[];
   },
 
-  // Get categories by project
+  // Get categories by project for current user
   async getByProject(projectId: string): Promise<Category[]> {
+    const userId = getCurrentUserId();
     const q = query(
       collection(db, COLLECTIONS.CATEGORIES),
+      where('userId', '==', userId),
       where('projectId', '==', projectId)
     );
     const querySnapshot = await getDocs(q);
@@ -247,9 +314,13 @@ export const categoryService = {
   },
 
   // Add new category
-  async add(category: Omit<Category, 'id'>): Promise<string> {
-    const docRef = await addDoc(collection(db, COLLECTIONS.CATEGORIES), category);
-    return docRef.id;
+  async add(category: Omit<Category, 'id'> & { id: string }): Promise<string> {
+    const userId = getCurrentUserId();
+    await setDoc(doc(collection(db, COLLECTIONS.CATEGORIES), category.id), {
+      ...category,
+      userId
+    });
+    return category.id;
   },
 
   // Update category
@@ -266,7 +337,11 @@ export const categoryService = {
 
   // Real-time listener for categories
   subscribeToCategories(callback: (categories: Category[]) => void) {
-    const q = query(collection(db, COLLECTIONS.CATEGORIES));
+    const userId = getCurrentUserId();
+    const q = query(
+      collection(db, COLLECTIONS.CATEGORIES),
+      where('userId', '==', userId)
+    );
     
     return onSnapshot(q, (querySnapshot) => {
       const categories = querySnapshot.docs.map(doc => ({
