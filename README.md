@@ -58,12 +58,47 @@ A modern, feature-rich prompt management website built with React and TypeScript
    npm install
    ```
 
-3. **Start the development server**
+3. **Set up Firebase (Optional - for cloud storage)**
+   
+   The app works with localStorage by default, but you can set up Firebase for cloud storage:
+   
+   a. **Create a Firebase project**:
+   - Go to [Firebase Console](https://console.firebase.google.com/)
+   - Click "Add project"
+   - Follow the setup wizard
+   
+   b. **Enable Firestore Database**:
+   - In your Firebase project, go to "Firestore Database"
+   - Click "Create database"
+   - Choose "Start in test mode" for development
+   
+   c. **Get your Firebase config**:
+   - Go to Project Settings (gear icon)
+   - Scroll down to "Your apps"
+   - Click the web app icon (</>)
+   - Copy the config object
+   
+   d. **Create environment file**:
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   e. **Add your Firebase config to .env.local**:
+   ```
+   REACT_APP_FIREBASE_API_KEY=your-api-key
+   REACT_APP_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+   REACT_APP_FIREBASE_PROJECT_ID=your-project-id
+   REACT_APP_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=123456789
+   REACT_APP_FIREBASE_APP_ID=your-app-id
+   ```
+
+4. **Start the development server**
    ```bash
    npm start
    ```
 
-4. **Open your browser**
+5. **Open your browser**
    Navigate to `http://localhost:3000` to see the application
 
 ### Building for Production
@@ -127,7 +162,22 @@ src/
 
 ## 💾 Data Storage
 
-All data is stored locally in your browser's localStorage, ensuring:
+The application supports two storage options:
+
+### 🔄 Hybrid Storage System
+- **Primary**: Firebase Firestore (when configured)
+- **Fallback**: Browser localStorage (always available)
+- **Automatic**: Seamlessly switches between storage methods
+
+### 🌐 Firebase Firestore (Cloud Storage)
+When Firebase is configured, you get:
+- **Cloud Sync**: Access your prompts from any device
+- **Real-time Updates**: Changes sync instantly across devices
+- **Backup**: Your data is safely stored in the cloud
+- **Collaboration**: Share projects with team members (future feature)
+
+### 💻 Local Storage (Default)
+When Firebase is not configured:
 - **Privacy**: Your prompts stay on your device
 - **Speed**: Instant access without network requests
 - **Offline Access**: Work without an internet connection
