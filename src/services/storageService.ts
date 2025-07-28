@@ -1,5 +1,21 @@
 import { promptService, projectService, categoryService } from './firebaseService';
 import { Prompt, Project, Category } from '../types';
+// Import localStorage functions
+import { 
+  getPrompts as getLocalPrompts,
+  savePrompts as saveLocalPrompts,
+  addPrompt as addLocalPrompt,
+  updatePrompt as updateLocalPrompt,
+  deletePrompt as deleteLocalPrompt,
+  getProjects as getLocalProjects,
+  addProject as addLocalProject,
+  updateProject as updateLocalProject,
+  deleteProject as deleteLocalProject,
+  getCategories as getLocalCategories,
+  addCategory as addLocalCategory,
+  updateCategory as updateLocalCategory,
+  deleteCategory as deleteLocalCategory
+} from '../utils/storage';
 
 // Check if Firebase is properly configured
 const isFirebaseConfigured = () => {
@@ -17,25 +33,6 @@ const isFirebaseConfigured = () => {
 
 // Fallback to localStorage if Firebase is not configured
 const useLocalStorage = !isFirebaseConfigured();
-
-// Import localStorage functions
-import { 
-  getPrompts as getLocalPrompts,
-  savePrompts as saveLocalPrompts,
-  addPrompt as addLocalPrompt,
-  updatePrompt as updateLocalPrompt,
-  deletePrompt as deleteLocalPrompt,
-  getProjects as getLocalProjects,
-  saveProjects as saveLocalProjects,
-  addProject as addLocalProject,
-  updateProject as updateLocalProject,
-  deleteProject as deleteLocalProject,
-  getCategories as getLocalCategories,
-  saveCategories as saveLocalCategories,
-  addCategory as addLocalCategory,
-  updateCategory as updateLocalCategory,
-  deleteCategory as deleteLocalCategory
-} from '../utils/storage';
 
 // Unified Storage Service
 export const storageService = {
