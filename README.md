@@ -2,6 +2,11 @@
 
 A modern, secure web application for managing and organizing AI prompts with Firebase authentication and Firestore database integration.
 
+## 🌐 **Live Demo**
+**🔗 [https://prompt-manager-2024.web.app](https://prompt-manager-2024.web.app)**
+
+*Try it now! Create an account and start managing your AI prompts in the cloud.*
+
 ![Prompt Manager](https://img.shields.io/badge/React-18-blue)
 ![Firebase](https://img.shields.io/badge/Firebase-10-orange)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
@@ -107,6 +112,11 @@ npm start
 ```
 
 Visit `http://localhost:3000` and create an account to start managing your prompts!
+
+## 🌐 **Or Use the Live Version**
+
+**No setup required!** You can use the app right now at:
+**🔗 [https://prompt-manager-2024.web.app](https://prompt-manager-2024.web.app)**
 
 ## 📁 Project Structure
 
