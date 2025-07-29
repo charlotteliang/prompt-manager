@@ -1,5 +1,7 @@
 {
-  "projects": {},
+  "projects": {
+    "default": "prompt-manager-2024"
+  },
   "targets": {},
   "etags": {}
 }
