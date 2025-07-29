@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Prompt, Project, Category } from './types';
-import { storageService } from './services/storageService';
+import { dataService } from './services/dataService';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import PromptCard from './components/PromptCard';
 import PromptForm from './components/PromptForm';
@@ -39,9 +39,9 @@ function AppContent() {
     
     const loadData = async () => {
       const [promptsData, projectsData, categoriesData] = await Promise.all([
-        storageService.getPrompts(),
-        storageService.getProjects(),
-        storageService.getCategories()
+        dataService.getPrompts(),
+        dataService.getProjects(),
+        dataService.getCategories()
       ]);
       setPrompts(promptsData);
       setProjects(projectsData);
@@ -80,12 +80,12 @@ function AppContent() {
   // Prompt handlers
   const handleSavePrompt = async (prompt: Prompt) => {
     if (editingPrompt) {
-      await storageService.updatePrompt(prompt);
-      const updatedPrompts = await storageService.getPrompts();
+      await dataService.updatePrompt(prompt);
+      const updatedPrompts = await dataService.getPrompts();
       setPrompts(updatedPrompts);
     } else {
-      await storageService.addPrompt(prompt);
-      const updatedPrompts = await storageService.getPrompts();
+      await dataService.addPrompt(prompt);
+      const updatedPrompts = await dataService.getPrompts();
       setPrompts(updatedPrompts);
     }
     setShowPromptForm(false);
@@ -99,8 +99,8 @@ function AppContent() {
 
   const handleDeletePrompt = async (promptId: string) => {
     if (window.confirm('Are you sure you want to delete this prompt?')) {
-      await storageService.deletePrompt(promptId);
-      const updatedPrompts = await storageService.getPrompts();
+      await dataService.deletePrompt(promptId);
+      const updatedPrompts = await dataService.getPrompts();
       setPrompts(updatedPrompts);
     }
   };
@@ -108,8 +108,8 @@ function AppContent() {
   const handleToggleFavorite = async (promptId: string) => {
     const prompt = prompts.find(p => p.id === promptId);
     if (prompt) {
-      await storageService.toggleFavorite(promptId, !prompt.isFavorite);
-      const updatedPrompts = await storageService.getPrompts();
+      await dataService.toggleFavorite(promptId, !prompt.isFavorite);
+      const updatedPrompts = await dataService.getPrompts();
       setPrompts(updatedPrompts);
     }
   };
@@ -123,12 +123,12 @@ function AppContent() {
   // Project handlers
   const handleSaveProject = async (project: Project) => {
     if (editingProject) {
-      await storageService.updateProject(project);
-      const updatedProjects = await storageService.getProjects();
+      await dataService.updateProject(project);
+      const updatedProjects = await dataService.getProjects();
       setProjects(updatedProjects);
     } else {
-      await storageService.addProject(project);
-      const updatedProjects = await storageService.getProjects();
+      await dataService.addProject(project);
+      const updatedProjects = await dataService.getProjects();
       setProjects(updatedProjects);
     }
     setShowProjectForm(false);
@@ -143,9 +143,9 @@ function AppContent() {
 
   const handleDeleteProject = async (projectId: string) => {
     if (window.confirm('Are you sure you want to delete this project? This will also delete all prompts in this project.')) {
-      await storageService.deleteProject(projectId);
-      const updatedProjects = await storageService.getProjects();
-      const updatedPrompts = await storageService.getPrompts();
+      await dataService.deleteProject(projectId);
+      const updatedProjects = await dataService.getProjects();
+      const updatedPrompts = await dataService.getPrompts();
       setProjects(updatedProjects);
       setPrompts(updatedPrompts);
       
@@ -167,12 +167,12 @@ function AppContent() {
   // Category handlers
   const handleSaveCategory = async (category: Category) => {
     if (editingCategory) {
-      await storageService.updateCategory(category);
-      const updatedCategories = await storageService.getCategories();
+      await dataService.updateCategory(category);
+      const updatedCategories = await dataService.getCategories();
       setCategories(updatedCategories);
     } else {
-      await storageService.addCategory(category);
-      const updatedCategories = await storageService.getCategories();
+      await dataService.addCategory(category);
+      const updatedCategories = await dataService.getCategories();
       setCategories(updatedCategories);
     }
     setShowCategoryForm(false);

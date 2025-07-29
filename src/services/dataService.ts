@@ -34,8 +34,8 @@ const isFirebaseConfigured = () => {
 // Fallback to localStorage if Firebase is not configured
 const useLocalStorage = !isFirebaseConfigured();
 
-// Unified Storage Service
-export const storageService = {
+// Unified Data Service - handles both Firestore and localStorage
+export const dataService = {
   // Prompt operations
   async getPrompts(): Promise<Prompt[]> {
     if (useLocalStorage) {
@@ -82,14 +82,14 @@ export const storageService = {
   },
 
   async deletePrompt(promptId: string): Promise<void> {
-    console.log('StorageService: Attempting to delete prompt with ID:', promptId);
+    console.log('DataService: Attempting to delete prompt with ID:', promptId);
     if (useLocalStorage) {
       deleteLocalPrompt(promptId);
       return;
     }
     try {
       await promptService.delete(promptId);
-      console.log('StorageService: Successfully deleted prompt with ID:', promptId);
+      console.log('DataService: Successfully deleted prompt with ID:', promptId);
     } catch (error) {
       console.warn('Firebase failed, falling back to localStorage:', error);
       deleteLocalPrompt(promptId);
@@ -163,14 +163,14 @@ export const storageService = {
   },
 
   async deleteProject(projectId: string): Promise<void> {
-    console.log('StorageService: Attempting to delete project with ID:', projectId);
+    console.log('DataService: Attempting to delete project with ID:', projectId);
     if (useLocalStorage) {
       deleteLocalProject(projectId);
       return;
     }
     try {
       await projectService.delete(projectId);
-      console.log('StorageService: Successfully deleted project with ID:', projectId);
+      console.log('DataService: Successfully deleted project with ID:', projectId);
     } catch (error) {
       console.warn('Firebase failed, falling back to localStorage:', error);
       deleteLocalProject(projectId);
@@ -280,7 +280,7 @@ export const storageService = {
   },
 
   // Utility functions
-  isUsingFirebase(): boolean {
+  isUsingFirestore(): boolean {
     return !useLocalStorage;
   },
 

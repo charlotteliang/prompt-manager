@@ -1,12 +1,13 @@
 import { Prompt, Project, Category } from '../types';
 
+// Local storage keys for browser storage fallback
 const STORAGE_KEYS = {
   PROMPTS: 'prompt-manager-prompts',
   PROJECTS: 'prompt-manager-projects',
-  CATEGORIES: 'prompt-manager-categories',
+  CATEGORIES: 'prompt-manager-categories'
 };
 
-// Generic storage functions
+// Generic local storage functions for fallback when Firestore is unavailable
 const getFromStorage = <T>(key: string): T[] => {
   try {
     const item = localStorage.getItem(key);
