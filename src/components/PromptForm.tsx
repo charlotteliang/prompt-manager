@@ -133,11 +133,11 @@ const PromptForm: React.FC<PromptFormProps> = ({
   const projectCategories = categories.filter(cat => cat.projectId === formData.project);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-xl max-w-6xl w-full max-h-[95vh] overflow-y-auto">
-        <div className="p-6 border-b border-secondary-200">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl lg:max-w-6xl xl:max-w-7xl h-full max-h-[98vh] sm:max-h-[95vh] overflow-hidden flex flex-col">
+        <div className="p-4 sm:p-6 border-b border-secondary-200 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-secondary-900">
+            <h2 className="text-xl sm:text-2xl font-bold text-secondary-900">
               {prompt ? 'Edit Prompt' : 'Create New Prompt'}
             </h2>
             <button
@@ -149,9 +149,9 @@ const PromptForm: React.FC<PromptFormProps> = ({
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6 flex-1 overflow-y-auto">
           {/* Title and Project Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* Title */}
             <div>
               <label className="block text-sm font-medium text-secondary-700 mb-2">
@@ -203,7 +203,7 @@ const PromptForm: React.FC<PromptFormProps> = ({
           </div>
 
           {/* Category and Tags Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* Category */}
             <div>
               <label className="block text-sm font-medium text-secondary-700 mb-2">
@@ -265,7 +265,7 @@ const PromptForm: React.FC<PromptFormProps> = ({
             </div>
           </div>
 
-          {/* Content Section - Full Width */}
+          {/* Analysis Panel - Now Above Content */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <label className="block text-sm font-medium text-secondary-700">
@@ -274,12 +274,91 @@ const PromptForm: React.FC<PromptFormProps> = ({
               <button
                 type="button"
                 onClick={() => setShowAnalysis(!showAnalysis)}
-                className="flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700"
+                className={`flex items-center gap-1 text-sm px-3 py-1 rounded-lg transition-all duration-200 ${
+                  showAnalysis 
+                    ? 'bg-primary-100 text-primary-700 border border-primary-300' 
+                    : 'text-primary-600 hover:text-primary-700 hover:bg-primary-50'
+                }`}
               >
-                <Sparkles className="w-4 h-4" />
-                Analysis
+                <Sparkles className={`w-4 h-4 ${showAnalysis ? 'animate-pulse' : ''}`} />
+                {showAnalysis ? 'Hide Analysis' : 'Show Analysis'}
               </button>
             </div>
+
+            {/* Analysis Panel - Always visible when enabled */}
+            {showAnalysis && (
+              <div className="card bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 shadow-sm">
+                <div className="flex items-center gap-2 mb-4">
+                  <Sparkles className="w-5 h-5 text-blue-600" />
+                  <h4 className="font-semibold text-blue-900">Live Prompt Analysis</h4>
+                  <div className="ml-auto text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                    Real-time
+                  </div>
+                </div>
+                
+                {/* Metrics Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                  <div className="text-center p-2 sm:p-3 bg-white rounded-lg border border-blue-200">
+                    <div className="text-lg sm:text-2xl font-bold text-blue-600">{analysis.wordCount}</div>
+                    <div className="text-xs text-blue-700">Words</div>
+                  </div>
+                  <div className="text-center p-2 sm:p-3 bg-white rounded-lg border border-blue-200">
+                    <div className="text-lg sm:text-2xl font-bold text-blue-600">{analysis.characterCount}</div>
+                    <div className="text-xs text-blue-700">Characters</div>
+                  </div>
+                  <div className="text-center p-2 sm:p-3 bg-white rounded-lg border border-blue-200">
+                    <div className="text-lg sm:text-2xl font-bold text-blue-600">{analysis.readabilityScore}</div>
+                    <div className="text-xs text-blue-700">Readability</div>
+                  </div>
+                  <div className="text-center p-2 sm:p-3 bg-white rounded-lg border border-blue-200">
+                    <div className="text-lg sm:text-2xl font-bold text-blue-600">~{analysis.estimatedTokens}</div>
+                    <div className="text-xs text-blue-700">Est. Tokens</div>
+                  </div>
+                </div>
+                
+                {/* Dynamic Suggestions */}
+                {analysis.suggestions.length > 0 ? (
+                  <div>
+                    <h5 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                      <span className="text-lg">💡</span>
+                      Smart Suggestions ({analysis.suggestions.length})
+                    </h5>
+                    <div className="space-y-3">
+                      {analysis.suggestions.map((suggestion, index) => (
+                        <div
+                          key={index}
+                          className={`p-4 rounded-lg border-l-4 transition-all duration-200 hover:shadow-md ${getPriorityColor(suggestion.priority)} border-l-current`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <span className="text-xl mt-0.5">{getSuggestionIcon(suggestion.type)}</span>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">{suggestion.suggestion}</p>
+                              <div className="flex items-center gap-2 mt-2">
+                                <span className={`text-xs px-2 py-1 rounded-full ${
+                                  suggestion.priority === 'high' ? 'bg-red-100 text-red-700' :
+                                  suggestion.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                                  'bg-green-100 text-green-700'
+                                }`}>
+                                  {suggestion.priority} priority
+                                </span>
+                                <span className="text-xs text-gray-500 capitalize">
+                                  {suggestion.type} improvement
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-blue-600">
+                    <Sparkles className="w-8 h-8 mx-auto mb-2" />
+                    <p className="text-sm">Great prompt! No suggestions needed.</p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Formatting Toolbar */}
             <div className="flex flex-wrap items-center gap-2 p-3 bg-secondary-50 border border-secondary-200 rounded-lg">
@@ -332,14 +411,14 @@ const PromptForm: React.FC<PromptFormProps> = ({
               ref={textareaRef}
               value={formData.content}
               onChange={(e) => handleInputChange('content', e.target.value)}
-              className="w-full px-4 py-3 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent min-h-[400px] resize-vertical font-mono text-sm leading-relaxed"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent min-h-[300px] sm:min-h-[400px] resize-vertical font-mono text-sm leading-relaxed"
               placeholder="✨ Enter your prompt content here...
 
 💡 Pro tips:
 • Use the formatting tools above to add bullet points and emojis
 • Press Tab to indent, Shift+Tab to outdent
 • This editor supports multiline text with good spacing
-• The analysis panel will help you optimize your prompt"
+• The analysis panel above will help you optimize your prompt in real-time"
               required
             />
 
@@ -353,62 +432,20 @@ const PromptForm: React.FC<PromptFormProps> = ({
             </div>
           </div>
 
-          {/* Analysis Panel */}
-          {showAnalysis && (
-            <div className="card bg-secondary-50 border-secondary-200">
-              <h4 className="font-medium text-secondary-900 mb-3">Prompt Analysis</h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-sm">
-                <div>
-                  <span className="text-secondary-600">Words:</span>
-                  <span className="ml-2 font-medium">{analysis.wordCount}</span>
-                </div>
-                <div>
-                  <span className="text-secondary-600">Characters:</span>
-                  <span className="ml-2 font-medium">{analysis.characterCount}</span>
-                </div>
-                <div>
-                  <span className="text-secondary-600">Readability:</span>
-                  <span className="ml-2 font-medium">{analysis.readabilityScore}/100</span>
-                </div>
-                <div>
-                  <span className="text-secondary-600">Est. Tokens:</span>
-                  <span className="ml-2 font-medium">{analysis.estimatedTokens}</span>
-                </div>
-              </div>
-              
-              {analysis.suggestions.length > 0 && (
-                <div>
-                  <h5 className="font-medium text-secondary-900 mb-2">Suggestions</h5>
-                  <div className="space-y-2">
-                    {analysis.suggestions.map((suggestion, index) => (
-                      <div
-                        key={index}
-                        className={`p-3 rounded-lg border-l-4 ${getPriorityColor(suggestion.priority)} border-l-current`}
-                      >
-                        <div className="flex items-start gap-2">
-                          <span className="text-lg">{getSuggestionIcon(suggestion.type)}</span>
-                          <p className="text-sm">{suggestion.suggestion}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-secondary-200">
+          <div className="flex items-center justify-end gap-2 sm:gap-3 pt-4 sm:pt-6 border-t border-secondary-200 flex-shrink-0">
             <button
               type="button"
               onClick={onCancel}
-              className="btn-secondary"
+              className="btn-secondary text-sm sm:text-base px-3 sm:px-4 py-2"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="btn-primary"
+              className="btn-primary text-sm sm:text-base px-3 sm:px-4 py-2"
               disabled={!formData.title.trim() || !formData.content.trim() || !formData.project}
             >
               {prompt ? 'Update Prompt' : 'Create Prompt'}
