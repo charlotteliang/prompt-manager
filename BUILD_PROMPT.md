@@ -51,14 +51,16 @@ Ask the LLM: *"Build a React TypeScript application with Tailwind CSS for a prom
 - Responsive layout with proper mobile support
 
 ### Step 2: Add Firestore Database
-Ask the LLM: *"Set up Firebase Firestore as the primary database for this prompt management app. Configure the Firebase project, create the necessary collections (prompts, projects, categories), and implement CRUD operations. Set up real-time subscriptions so the app updates automatically when data changes. Also implement a hybrid storage system that falls back to localStorage when Firebase is not available."*
+Ask the LLM: *"Set up Firebase Firestore as the primary database for this prompt management app. Configure the Firebase project, create the necessary collections (prompts, projects, categories), and implement CRUD operations. Set up real-time subscriptions so the app updates automatically when data changes. Also implement a hybrid storage system that falls back to localStorage when Firebase is not available. IMPORTANT: Use environment variables for all Firebase configuration (REACT_APP_FIREBASE_*) and never hardcode API keys in the source code. Create a .env.example template file for users to copy and configure their own Firebase project."*
 
 **What the LLM Should Handle:**
-- Firebase project configuration and initialization
+- Firebase project configuration and initialization using environment variables
 - Firestore security rules setup
 - Collection structure design
 - Real-time data synchronization
 - Offline fallback implementation
+- Environment variable setup with .env.example template
+- Security best practices (no hardcoded API keys)
 
 ### Step 3: Add Authentication
 Ask the LLM: *"Implement Firebase Authentication for user login and registration. Add a login/signup system with email/password authentication. Protect the app so only authenticated users can access their prompts. Set up user-specific data isolation so each user only sees their own prompts, projects, and categories."*
@@ -89,6 +91,32 @@ Ask the LLM: *"Deploy this prompt management app to Firebase Hosting. Set up the
 - **State Management**: React hooks and context
 - **Responsive Design**: Mobile-first approach
 
+## Security Requirements
+
+- **Environment Variables**: All Firebase configuration must use environment variables (REACT_APP_FIREBASE_*)
+- **No Hardcoded Secrets**: Never commit API keys, passwords, or sensitive data to version control
+- **Template Files**: Provide .env.example with placeholder values for user configuration
+- **Gitignore**: Ensure .env.local and other sensitive files are properly gitignored
+- **Documentation**: Include clear setup instructions for environment variables
+
+### Security Implementation Checklist
+
+**Firebase Configuration:**
+- [ ] Use `process.env.REACT_APP_FIREBASE_API_KEY` instead of hardcoded values
+- [ ] Create `.env.example` with placeholder values like `your_api_key_here`
+- [ ] Add `.env.local` to `.gitignore` to prevent accidental commits
+- [ ] Document the setup process in README
+
+**Code Structure:**
+- [ ] Firebase config file should only reference environment variables
+- [ ] No API keys, project IDs, or sensitive data in source code
+- [ ] Provide clear error handling for missing environment variables
+
+**Documentation:**
+- [ ] Include step-by-step Firebase setup instructions
+- [ ] Explain how to get Firebase config from console
+- [ ] Warn users about not committing their `.env.local` file
+
 ## Success Criteria
 
 The final app should:
@@ -98,4 +126,5 @@ The final app should:
 - Work seamlessly across all devices
 - Persist data in the cloud with offline fallback
 - Have user authentication and data isolation
-- Be deployed and accessible via a public URL 
+- Be deployed and accessible via a public URL
+- Follow security best practices with no exposed API keys or sensitive data 
