@@ -7,6 +7,20 @@ A modern, secure web application for managing and organizing AI prompts with Fir
 
 *Try it now! Create an account and start managing your AI prompts in the cloud.*
 
+## 🛠️ **Build Your Own**
+
+Want to build this app from scratch? Check out our comprehensive build guide:
+
+**📋 [BUILD_PROMPT.md](./BUILD_PROMPT.md)** - Complete prompt for building this app with an AI assistant
+
+This guide provides:
+- Detailed app description and feature requirements
+- Step-by-step prompts for AI assistants (Claude, Gemini, etc.)
+- User journey and success criteria
+- Technical requirements and architecture
+
+Perfect for learning Firebase, React, or building similar applications!
+
 ![Prompt Manager](https://img.shields.io/badge/React-18-blue)
 ![Firebase](https://img.shields.io/badge/Firebase-10-orange)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
