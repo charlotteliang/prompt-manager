@@ -96,20 +96,24 @@ npm install
    - Go to Project Settings > General
    - Add a web app and copy the config
 
-### 3. Configure Firebase
+### 3. Configure Environment Variables
 
-Update `src/config/firebase.ts` with your project details:
-
-```typescript
-const firebaseConfig = {
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com", 
-  projectId: "your-project-id",
-  storageBucket: "your-project.firebasestorage.app",
-  messagingSenderId: "your-sender-id",
-  appId: "your-app-id"
-};
+1. Copy the example environment file:
+```bash
+cp .env.example .env.local
 ```
+
+2. Update `.env.local` with your Firebase project details:
+```bash
+REACT_APP_FIREBASE_API_KEY=your_api_key_here
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+REACT_APP_FIREBASE_APP_ID=your_app_id
+```
+
+**⚠️ Security Note**: Never commit your `.env.local` file to version control. It's already added to `.gitignore` to prevent accidental commits.
 
 ### 4. Deploy Firestore Rules
 

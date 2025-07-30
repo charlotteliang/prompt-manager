@@ -4,12 +4,12 @@ import { getAuth } from 'firebase/auth';
 
 // Firebase configuration for Prompt Manager App
 const firebaseConfig = {
-  apiKey: "AIzaSyDzYTg0iP4ij6qClXXf7lSX658Rn9ZwgG4",
-  authDomain: "prompt-manager-2024.firebaseapp.com",
-  projectId: "prompt-manager-2024",
-  storageBucket: "prompt-manager-2024.firebasestorage.app",
-  messagingSenderId: "207796645105",
-  appId: "1:207796645105:web:f3ecde1781565fcc7c4d50"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
 
 // Initialize Firebase
