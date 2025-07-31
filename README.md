@@ -100,20 +100,20 @@ npm install
 
 1. Copy the example environment file:
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
 
-2. Update `.env.local` with your Firebase project details:
+2. Update `.env` with your Firebase project details:
 ```bash
 REACT_APP_FIREBASE_API_KEY=your_api_key_here
 REACT_APP_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
 REACT_APP_FIREBASE_PROJECT_ID=your_project_id
-REACT_APP_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_project_id.firebasestorage.app
 REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 REACT_APP_FIREBASE_APP_ID=your_app_id
 ```
 
-**⚠️ Security Note**: Never commit your `.env.local` file to version control. It's already added to `.gitignore` to prevent accidental commits.
+**⚠️ Security Note**: Never commit your `.env` file to version control. It's already added to `.gitignore` to prevent accidental commits.
 
 ### 4. Deploy Firestore Rules
 
