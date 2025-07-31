@@ -9,15 +9,23 @@ A modern, secure web application for managing and organizing AI prompts with Fir
 
 ## 🛠️ **Build Your Own**
 
-Want to build this app from scratch? Check out our comprehensive build guide:
+Want to build this app from scratch? Check out our comprehensive build guides:
 
-**📋 [BUILD_PROMPT.md](./BUILD_PROMPT.md)** - Complete prompt for building this app with an AI assistant
+### 📋 **Build Guides**
 
-This guide provides:
-- Detailed app description and feature requirements
-- Step-by-step prompts for AI assistants (Claude, Gemini, etc.)
-- User journey and success criteria
-- Technical requirements and architecture
+1. **[BUILD_PROMPT_APP.md](./BUILD_PROMPT_APP.md)** - Build the React TypeScript prototype
+   - Core app functionality with localStorage
+   - Complete prompt for AI assistants (Claude, Gemini, etc.)
+   - Perfect starting point for the working prototype
+
+2. **[BUILD_PROMPT_FIREBASE.md](./BUILD_PROMPT_FIREBASE.md)** - Add Firebase integration
+   - Firestore database setup
+   - Authentication system
+   - Production deployment to Firebase Hosting
+
+### 🎯 **Recommended Workflow:**
+- Start with `BUILD_PROMPT_APP.md` to create a fully functional local prototype
+- Then use `BUILD_PROMPT_FIREBASE.md` to add cloud features and deploy
 
 Perfect for learning Firebase, React, or building similar applications!
 
