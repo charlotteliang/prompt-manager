@@ -6,7 +6,7 @@ This guide helps you integrate Firebase services (Firestore, Authentication, Hos
 
 ## Prerequisites
 
-Completed your app prototyping 
+Prototype your app.
 
 ## Firebase Services Integration
 
@@ -23,7 +23,7 @@ Use environment variables for all Firebase configuration and never hardcode API 
 **If you already have an existing Firebase project or web app:**
 
 ```
-Connect the app with app ID [Your App ID]
+Connect Firebase app ID [Your App ID] with this app.
 ```
 
 ### Step 2: Add Firestore Database
@@ -34,13 +34,14 @@ Copy and paste this prompt to your AI assistant:
 Setup Firebase Firestore as the database for this app.
 ```
 
-**Additional Context for AI Assistant:**
+**Additional Prompt for AI Assistant:**
 
 **If asked to go to console to create a database:**
 
 ```
 Deploy Firestore.
 ```
+This will deploy the local setup and provision a Firestore database on the console.
 
 **If you notice LLMs using emulator:**
 
