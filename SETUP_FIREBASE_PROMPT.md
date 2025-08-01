@@ -19,11 +19,16 @@ This guide helps you integrate Firebase services (Firestore, Authentication, Hos
 Copy and paste this prompt to your AI assistant:
 
 ```
-Setup Firebase MCP server based on this [doc](https://firebase.google.com/docs/cli/mcp-server#before-you-begin)
-Create a new Firebase project and a new Firebase web app on the Firebase Console, and connect to this app. Use environment variables for all Firebase configuration and never hardcode API keys in the source code.
+Setup Firebase MCP server based on this doc: https://firebase.google.com/docs/cli/mcp-server#before-you-begin.
+Create a new Firebase project and a new Firebase web app on the Firebase Console, and connect to this app. 
+Use environment variables for all Firebase configuration and never hardcode API keys in the source code.
 ```
 
-• **[USER ACTION]** Run `firebase login --no-localhost`
+**If you already have an existing Firebase project or web app:**
+
+```
+Connect the app with app ID [Your App ID]
+```
 
 ### Step 2: Add Firestore Database
 
@@ -33,7 +38,17 @@ Copy and paste this prompt to your AI assistant:
 Setup Firebase Firestore as the database for this app.
 ```
 
-• **[USER ACTION]** Follow the LLM's instructions to enable Firestore in your Firebase project.
+**Additional Context for AI Assistant:**
+
+```
+USE THIS PROMPT IF ASKED TO GO TO CONSOLE CREATE A DATABASE:
+Deploy Firestore.
+```
+
+```
+USE THIS PROMPT IF YOU NOTICE LLMS USING EMULATOR:
+Do not use Emulator, use production directly.
+```
 
 ### Step 3: Add Authentication
 
@@ -52,10 +67,6 @@ Copy and paste this prompt to your AI assistant:
 ```
 Setup Firebase Hosting and deploy the app to production.
 ```
-
-• **[USER ACTION]** Follow the LLM's instructions to initialize hosting and deploy.
-
-
 
 ## Security Requirements
 
