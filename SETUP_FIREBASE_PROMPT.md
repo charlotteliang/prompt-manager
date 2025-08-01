@@ -6,11 +6,7 @@ This guide helps you integrate Firebase services (Firestore, Authentication, Hos
 
 ## Prerequisites
 
-- Completed your app prototyping 
-- **Firebase MCP Server** configured for AI-powered development (recommended)
-  - Follow the setup guide: [Firebase MCP Server Documentation](https://firebase.google.com/docs/cli/mcp-server#setup)
-  - This enables AI assistants (Claude, Cursor, etc.) to directly interact with your Firebase project
-  - Helps with automated Firebase configuration, Firestore operations, and security rules
+Completed your app prototyping 
 
 ## Firebase Services Integration
 
@@ -40,13 +36,15 @@ Setup Firebase Firestore as the database for this app.
 
 **Additional Context for AI Assistant:**
 
+**If asked to go to console to create a database:**
+
 ```
-USE THIS PROMPT IF ASKED TO GO TO CONSOLE CREATE A DATABASE:
 Deploy Firestore.
 ```
 
+**If you notice LLMs using emulator:**
+
 ```
-USE THIS PROMPT IF YOU NOTICE LLMS USING EMULATOR:
 Do not use Emulator, use production directly.
 ```
 
