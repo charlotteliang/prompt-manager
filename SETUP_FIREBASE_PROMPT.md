@@ -6,9 +6,7 @@ This guide helps you integrate Firebase services (Firestore, Authentication, Hos
 
 ## Prerequisites
 
-- Completed prompt management app prototype (see `BUILD_PROMPT_APP.md`)
-- Firebase account and project set up
-- Basic understanding of Firebase services
+- Completed your app prototyping 
 - **Firebase MCP Server** configured for AI-powered development (recommended)
   - Follow the setup guide: [Firebase MCP Server Documentation](https://firebase.google.com/docs/cli/mcp-server#setup)
   - This enables AI assistants (Claude, Cursor, etc.) to directly interact with your Firebase project
@@ -21,11 +19,11 @@ This guide helps you integrate Firebase services (Firestore, Authentication, Hos
 Copy and paste this prompt to your AI assistant:
 
 ```
-Setup Firebase for this app. Use environment variables for all Firebase configuration and never hardcode API keys in the source code.
+Setup Firebase MCP server based on this [doc](https://firebase.google.com/docs/cli/mcp-server#before-you-begin)
+Create a new Firebase project and a new Firebase web app on the Firebase Console, and connect to this app. Use environment variables for all Firebase configuration and never hardcode API keys in the source code.
 ```
 
 • **[USER ACTION]** Run `firebase login --no-localhost`
-• **[USER ACTION]** Create a new Firebase project and a new Firebase web app on the Firebase Console, and connect to this app
 
 ### Step 2: Add Firestore Database
 
