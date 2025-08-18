@@ -295,7 +295,6 @@ function AppContent() {
         <PromptForm
           prompt={editingPrompt}
           projects={projects}
-          categories={categories}
           onSave={handleSavePrompt}
           onCancel={() => {
             setShowPromptForm(false);

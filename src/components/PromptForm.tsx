@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Prompt, Project, Category } from '../types';
+import { Prompt, Project } from '../types';
 import { analyzePrompt, getSuggestionIcon, getPriorityColor } from '../utils/promptAnalysis';
-import { X, Plus, Sparkles, List, Smile, Type } from 'lucide-react';
+import { X, Plus, Sparkles, List, Smile, Type, Bold, Indent, Outdent, Italic, Underline, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
 
 interface PromptFormProps {
   prompt?: Prompt;
   projects: Project[];
-  categories: Category[];
   onSave: (prompt: Prompt) => void;
   onCancel: () => void;
   onAddProject?: () => void;
@@ -15,7 +14,6 @@ interface PromptFormProps {
 const PromptForm: React.FC<PromptFormProps> = ({
   prompt,
   projects,
-  categories,
   onSave,
   onCancel,
   onAddProject,
@@ -24,13 +22,14 @@ const PromptForm: React.FC<PromptFormProps> = ({
     title: prompt?.title || '',
     content: prompt?.content || '',
     project: prompt?.project || '',
-    category: prompt?.category || '',
-    tags: prompt?.tags || [],
   });
-  const [newTag, setNewTag] = useState('');
   const [analysis, setAnalysis] = useState(analyzePrompt(formData.content));
   const [showAnalysis, setShowAnalysis] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
+  const [isBold, setIsBold] = useState(false);
+  const [isItalic, setIsItalic] = useState(false);
+  const [isUnderline, setIsUnderline] = useState(false);
+  const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('left');
 
   // Common emojis for prompts
   const commonEmojis = ['✨', '🚀', '💡', '🎯', '📝', '🔥', '💪', '⭐', '🌟', '🎨', '📊', '🎉', '🔧', '💰', '📈', '🏆', '🎭', '🌈', '⚡', '🌍'];
@@ -39,72 +38,178 @@ const PromptForm: React.FC<PromptFormProps> = ({
     setAnalysis(analyzePrompt(formData.content));
   }, [formData.content]);
 
+  useEffect(() => {
+    if (editorRef.current && !editorRef.current.innerHTML) {
+      editorRef.current.innerHTML = formData.content || '';
+    }
+  }, [formData.content]);
+
   const handleInputChange = (field: string, value: string | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const insertAtCursor = (text: string) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+  const updateContent = () => {
+    if (editorRef.current) {
+      const content = editorRef.current.innerText || editorRef.current.textContent || '';
+      handleInputChange('content', content);
+    }
+  };
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const currentContent = formData.content;
-    
-    const newContent = currentContent.substring(0, start) + text + currentContent.substring(end);
-    handleInputChange('content', newContent);
-    
-    // Set cursor position after inserted text
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + text.length, start + text.length);
-    }, 0);
+  const insertAtCursor = (text: string) => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      range.deleteContents();
+      const textNode = document.createTextNode(text);
+      range.insertNode(textNode);
+      range.setStartAfter(textNode);
+      range.setEndAfter(textNode);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } else {
+      // If no selection, append to the end
+      const currentText = editor.innerText || editor.textContent || '';
+      editor.innerText = currentText + text;
+      // Set cursor to end
+      const range = document.createRange();
+      const sel = window.getSelection();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+    }
+    updateContent();
   };
 
   const addBulletPoint = () => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+    const editor = editorRef.current;
+    if (!editor) return;
 
-    const start = textarea.selectionStart;
-    const content = formData.content;
-    
-    // Check if we're at the beginning of a line
-    const beforeCursor = content.substring(0, start);
-    const isNewLine = beforeCursor.length === 0 || beforeCursor.endsWith('\n');
-    
-    const bulletText = isNewLine ? '• ' : '\n• ';
-    insertAtCursor(bulletText);
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const bulletText = document.createTextNode('• ');
+      range.insertNode(bulletText);
+      range.setStartAfter(bulletText);
+      range.setEndAfter(bulletText);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } else {
+      insertAtCursor('• ');
+    }
+    updateContent();
   };
 
   const addNumberedList = () => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+    const editor = editorRef.current;
+    if (!editor) return;
 
-    const start = textarea.selectionStart;
-    const content = formData.content;
-    
-    // Check if we're at the beginning of a line
-    const beforeCursor = content.substring(0, start);
-    const isNewLine = beforeCursor.length === 0 || beforeCursor.endsWith('\n');
-    
-    const numberedText = isNewLine ? '1. ' : '\n1. ';
-    insertAtCursor(numberedText);
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const numberedText = document.createTextNode('1. ');
+      range.insertNode(numberedText);
+      range.setStartAfter(numberedText);
+      range.setEndAfter(numberedText);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } else {
+      insertAtCursor('1. ');
+    }
+    updateContent();
   };
 
   const addEmoji = (emoji: string) => {
     insertAtCursor(emoji);
   };
 
-  const handleAddTag = () => {
-    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-      handleInputChange('tags', [...formData.tags, newTag.trim()]);
-      setNewTag('');
+  const toggleBold = () => {
+    document.execCommand('bold', false);
+    setIsBold(!isBold);
+    updateContent();
+  };
+
+  const toggleItalic = () => {
+    document.execCommand('italic', false);
+    setIsItalic(!isItalic);
+    updateContent();
+  };
+
+  const toggleUnderline = () => {
+    document.execCommand('underline', false);
+    setIsUnderline(!isUnderline);
+    updateContent();
+  };
+
+  const increaseIndent = () => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const container = range.commonAncestorContainer;
+      
+      if (container.nodeType === Node.TEXT_NODE) {
+        const parent = container.parentNode;
+        if (parent && parent.nodeName === 'DIV') {
+          const currentStyle = (parent as HTMLElement).style.marginLeft || '0px';
+          const currentIndent = parseInt(currentStyle) || 0;
+          (parent as HTMLElement).style.marginLeft = `${currentIndent + 20}px`;
+        }
+      }
+    }
+    updateContent();
+  };
+
+  const decreaseIndent = () => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const container = range.commonAncestorContainer;
+      
+      if (container.nodeType === Node.TEXT_NODE) {
+        const parent = container.parentNode;
+        if (parent && parent.nodeName === 'DIV') {
+          const currentStyle = (parent as HTMLElement).style.marginLeft || '0px';
+          const currentIndent = parseInt(currentStyle) || 0;
+          const newIndent = Math.max(0, currentIndent - 20);
+          (parent as HTMLElement).style.marginLeft = `${newIndent}px`;
+        }
+      }
+    }
+    updateContent();
+  };
+
+  const setTextAlignment = (alignment: 'left' | 'center' | 'right') => {
+    document.execCommand('justifyLeft', false);
+    if (alignment === 'center') {
+      document.execCommand('justifyCenter', false);
+    } else if (alignment === 'right') {
+      document.execCommand('justifyRight', false);
+    }
+    setTextAlign(alignment);
+    updateContent();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      if (e.shiftKey) {
+        decreaseIndent();
+      } else {
+        increaseIndent();
+      }
     }
   };
 
-  const handleRemoveTag = (tagToRemove: string) => {
-    handleInputChange('tags', formData.tags.filter(tag => tag !== tagToRemove));
-  };
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,8 +223,8 @@ const PromptForm: React.FC<PromptFormProps> = ({
       title: formData.title.trim(),
       content: formData.content.trim(),
       project: formData.project,
-      category: formData.category,
-      tags: formData.tags,
+      category: '',
+      tags: [],
       createdAt: prompt?.createdAt || new Date(),
       updatedAt: new Date(),
       version: prompt ? prompt.version + 1 : 1,
@@ -130,7 +235,7 @@ const PromptForm: React.FC<PromptFormProps> = ({
     onSave(updatedPrompt);
   };
 
-  const projectCategories = categories.filter(cat => cat.projectId === formData.project);
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
@@ -202,68 +307,7 @@ const PromptForm: React.FC<PromptFormProps> = ({
             </div>
           </div>
 
-          {/* Category and Tags Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            {/* Category */}
-            <div>
-              <label className="block text-sm font-medium text-secondary-700 mb-2">
-                Category
-              </label>
-              <select
-                value={formData.category}
-                onChange={(e) => handleInputChange('category', e.target.value)}
-                className="input-field"
-              >
-                <option value="">Select a category</option>
-                {projectCategories.map(category => (
-                  <option key={category.id} value={category.name}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
 
-            {/* Tags */}
-            <div>
-              <label className="block text-sm font-medium text-secondary-700 mb-2">
-                Tags
-              </label>
-              <div className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
-                  className="input-field flex-1"
-                  placeholder="Add a tag..."
-                />
-                <button
-                  type="button"
-                  onClick={handleAddTag}
-                  className="btn-secondary px-3"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {formData.tags.map(tag => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm"
-                  >
-                    #{tag}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveTag(tag)}
-                      className="hover:text-primary-900"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
 
           {/* Analysis Panel - Now Above Content */}
           <div className="space-y-4">
@@ -360,79 +404,191 @@ const PromptForm: React.FC<PromptFormProps> = ({
               </div>
             )}
 
-            {/* Formatting Toolbar */}
+            {/* Enhanced Google Docs-style Formatting Toolbar */}
             <div className="flex flex-wrap items-center gap-2 p-3 bg-secondary-50 border border-secondary-200 rounded-lg">
               <span className="text-sm font-medium text-secondary-700 mr-2">Format:</span>
               
-              <button
-                type="button"
-                onClick={addBulletPoint}
-                className="flex items-center gap-1 px-3 py-1 text-sm bg-white border border-secondary-300 rounded hover:bg-secondary-50 transition-colors"
-                title="Add bullet point"
-              >
-                <List className="w-4 h-4" />
-                Bullet
-              </button>
+              {/* Text Formatting */}
+              <div className="flex items-center gap-1 border-r border-secondary-300 pr-2">
+                <button
+                  type="button"
+                  onClick={toggleBold}
+                  className={`flex items-center gap-1 px-2 py-1 text-sm rounded hover:bg-white transition-colors ${
+                    isBold ? 'bg-primary-100 text-primary-700 border border-primary-300' : 'bg-white border border-secondary-300'
+                  }`}
+                  title="Bold (Ctrl+B)"
+                >
+                  <Bold className="w-4 h-4" />
+                </button>
 
-              <button
-                type="button"
-                onClick={addNumberedList}
-                className="flex items-center gap-1 px-3 py-1 text-sm bg-white border border-secondary-300 rounded hover:bg-secondary-50 transition-colors"
-                title="Add numbered list"
-              >
-                <Type className="w-4 h-4" />
-                Number
-              </button>
+                <button
+                  type="button"
+                  onClick={toggleItalic}
+                  className={`flex items-center gap-1 px-2 py-1 text-sm rounded hover:bg-white transition-colors ${
+                    isItalic ? 'bg-primary-100 text-primary-700 border border-primary-300' : 'bg-white border border-secondary-300'
+                  }`}
+                  title="Italic (Ctrl+I)"
+                >
+                  <Italic className="w-4 h-4" />
+                </button>
 
-              <div className="h-4 w-px bg-secondary-300 mx-1"></div>
+                <button
+                  type="button"
+                  onClick={toggleUnderline}
+                  className={`flex items-center gap-1 px-2 py-1 text-sm rounded hover:bg-white transition-colors ${
+                    isUnderline ? 'bg-primary-100 text-primary-700 border border-primary-300' : 'bg-white border border-secondary-300'
+                  }`}
+                  title="Underline (Ctrl+U)"
+                >
+                  <Underline className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Text Alignment */}
+              <div className="flex items-center gap-1 border-r border-secondary-300 pr-2">
+                <button
+                  type="button"
+                  onClick={() => setTextAlignment('left')}
+                  className={`flex items-center gap-1 px-2 py-1 text-sm rounded hover:bg-white transition-colors ${
+                    textAlign === 'left' ? 'bg-primary-100 text-primary-700 border border-primary-300' : 'bg-white border border-secondary-300'
+                  }`}
+                  title="Align Left"
+                >
+                  <AlignLeft className="w-4 h-4" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setTextAlignment('center')}
+                  className={`flex items-center gap-1 px-2 py-1 text-sm rounded hover:bg-white transition-colors ${
+                    textAlign === 'center' ? 'bg-primary-100 text-primary-700 border border-primary-300' : 'bg-white border border-secondary-300'
+                  }`}
+                  title="Align Center"
+                >
+                  <AlignCenter className="w-4 h-4" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setTextAlignment('right')}
+                  className={`flex items-center gap-1 px-2 py-1 text-sm rounded hover:bg-white transition-colors ${
+                    textAlign === 'right' ? 'bg-primary-100 text-primary-700 border border-primary-300' : 'bg-white border border-secondary-300'
+                  }`}
+                  title="Align Right"
+                >
+                  <AlignRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Indentation Controls */}
+              <div className="flex items-center gap-1 border-r border-secondary-300 pr-2">
+                <button
+                  type="button"
+                  onClick={decreaseIndent}
+                  className="flex items-center gap-1 px-2 py-1 text-sm bg-white border border-secondary-300 rounded hover:bg-secondary-50 transition-colors"
+                  title="Decrease Indent (Shift+Tab)"
+                >
+                  <Outdent className="w-4 h-4" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={increaseIndent}
+                  className="flex items-center gap-1 px-2 py-1 text-sm bg-white border border-secondary-300 rounded hover:bg-secondary-50 transition-colors"
+                  title="Increase Indent (Tab)"
+                >
+                  <Indent className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* List Formatting */}
+              <div className="flex items-center gap-1 border-r border-secondary-300 pr-2">
+                <button
+                  type="button"
+                  onClick={addBulletPoint}
+                  className="flex items-center gap-1 px-2 py-1 text-sm bg-white border border-secondary-300 rounded hover:bg-secondary-50 transition-colors"
+                  title="Add bullet point"
+                >
+                  <List className="w-4 h-4" />
+                  Bullet
+                </button>
+
+                <button
+                  type="button"
+                  onClick={addNumberedList}
+                  className="flex items-center gap-1 px-2 py-1 text-sm bg-white border border-secondary-300 rounded hover:bg-secondary-50 transition-colors"
+                  title="Add numbered list"
+                >
+                  <Type className="w-4 h-4" />
+                  Number
+                </button>
+              </div>
               
-              <span className="text-sm text-secondary-600">
-                <Smile className="w-4 h-4 inline mr-1" />
-                Emojis:
-              </span>
-              
-              <div className="flex flex-wrap gap-1">
-                {commonEmojis.map(emoji => (
-                  <button
-                    key={emoji}
-                    type="button"
-                    onClick={() => addEmoji(emoji)}
-                    className="text-lg hover:bg-white hover:scale-110 transition-all duration-150 rounded px-1 py-0.5"
-                    title={`Add ${emoji}`}
-                  >
-                    {emoji}
-                  </button>
-                ))}
+              {/* Emojis */}
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-secondary-600">
+                  <Smile className="w-4 h-4 inline mr-1" />
+                  Emojis:
+                </span>
+                
+                <div className="flex flex-wrap gap-1">
+                  {commonEmojis.map(emoji => (
+                    <button
+                      key={emoji}
+                      type="button"
+                      onClick={() => addEmoji(emoji)}
+                      className="text-lg hover:bg-white hover:scale-110 transition-all duration-150 rounded px-1 py-0.5"
+                      title={`Add ${emoji}`}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Enhanced Content Textarea */}
-            <textarea
-              ref={textareaRef}
-              value={formData.content}
-              onChange={(e) => handleInputChange('content', e.target.value)}
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent min-h-[300px] sm:min-h-[400px] resize-vertical font-mono text-sm leading-relaxed"
-              placeholder="✨ Enter your prompt content here...
+            {/* Enhanced Rich Text Editor */}
+            <div className="relative">
+              <div
+                ref={editorRef}
+                contentEditable
+                onInput={updateContent}
+                onKeyDown={handleKeyDown}
+                onFocus={() => {
+                  if (editorRef.current && !editorRef.current.innerText) {
+                    editorRef.current.innerText = '';
+                  }
+                }}
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent min-h-[300px] sm:min-h-[400px] resize-vertical font-mono text-sm leading-relaxed bg-white"
+                style={{ 
+                  whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word',
+                  overflowWrap: 'break-word',
+                  direction: 'ltr'
+                }}
+              />
+              {!formData.content && (
+                <div className="absolute top-2 left-3 text-secondary-400 pointer-events-none font-mono text-sm leading-relaxed">
+                  ✨ Enter your prompt content here...
 
 💡 Pro tips:
-• Use the formatting tools above to add bullet points and emojis
+• Use the formatting toolbar above for bold, italic, and alignment
 • Press Tab to indent, Shift+Tab to outdent
-• This editor supports multiline text with good spacing
-• The analysis panel above will help you optimize your prompt in real-time"
-              required
-            />
+• Use bullet points and emojis to make your prompts more engaging
+• The analysis panel above will help you optimize your prompt in real-time
+                </div>
+              )}
+            </div>
 
             <div className="text-sm text-secondary-500 flex items-center justify-between">
               <span>
                 {formData.content.length} characters • {formData.content.split(/\s+/).filter(word => word.length > 0).length} words
               </span>
               <span className="text-xs">
-                💡 Tip: Use bullet points and emojis to make your prompts more engaging
+                💡 Tip: Use the formatting toolbar for Google Docs-like editing experience
               </span>
             </div>
           </div>
-
-
 
           {/* Action Buttons */}
           <div className="flex items-center justify-end gap-2 sm:gap-3 pt-4 sm:pt-6 border-t border-secondary-200 flex-shrink-0">

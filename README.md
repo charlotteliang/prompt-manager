@@ -68,6 +68,7 @@ Perfect for learning Firebase, React, or building similar applications!
 ### Prerequisites
 - Node.js 16+ and npm
 - Firebase account (for cloud features)
+- Setup Firebase MCP server based on this doc: https://firebase.google.com/docs/cli/mcp-server#before-you-begin
 
 ### 1. Clone and Install
 
