@@ -12,7 +12,8 @@ A modern, secure web application for managing and organizing AI prompts with Fir
 Want to build this app from scratch? Use these prompts with your AI assistant:
 
 1. **[PROTOTYPE_APP_PROMPT.md](./PROTOTYPE_APP_PROMPT.md)** - Use this prompt to prototype the app
-2. **[SETUP_FIREBASE_PROMPT.md](./SETUP_FIREBASE_PROMPT.md)** - Use this prompt to setup Firebase
+2. **[SETUP_FIREBASE.md](./SETUP_FIREBASE.md)** - Add this as AI rules/cursor rules in your IDE for Firebase setup
+3. **[SETUP_FIREBASE_PROMPT.md](./SETUP_FIREBASE_PROMPT.md)** - Use this prompt to setup Firebase if the flow was interrupted
 
 Perfect for learning Firebase, React, or building similar applications!
 
@@ -69,6 +70,7 @@ Perfect for learning Firebase, React, or building similar applications!
 - Node.js 16+ and npm
 - Firebase account (for cloud features)
 - Setup Firebase MCP server based on this doc: https://firebase.google.com/docs/cli/mcp-server#before-you-begin
+- **AI IDE Setup**: Add [`SETUP_FIREBASE.md`](./SETUP_FIREBASE.md) as cursor rules/AI rules in your IDE (Cursor, Gemini CLI, etc.)
 
 ### 1. Clone and Install
 
