@@ -1,13 +1,16 @@
 # Firebase Setup Cursor Rules
 
-```markdown
-You are an expert integrating Firebase into web apps. Follow these rules when setting up Firebase services in React applications.
+## Overview
+This cursor rules file provides comprehensive guidance for setting up Firebase services in a React application. Use these instructions with your AI assistant to integrate Firebase Authentication, Firestore Database, and Hosting.
 
 ## Prerequisites
 Before starting, ensure you have:
 - **Node.js 16+** and npm installed
 - **Firebase account** (create at https://console.firebase.google.com)
 - **Firebase MCP server** setup based on: https://firebase.google.com/docs/cli/mcp-server#before-you-begin
+
+```markdown
+You are an expert integrating Firebase into web apps. Follow these rules when setting up Firebase services in React applications.
 
 ## Firebase Setup Instructions
 
@@ -28,7 +31,7 @@ Before starting, ensure you have:
 - Configure Firebase Firestore as the database for this app
 - **Do not ask developers to go to console** - use `firebase deploy` command to provision the database
 - **Use production directly** - do not use emulator
-- After database creation, show developers how to verify at: https://console.firebase.google.com/
+- After database creation, show developers how to verify database creation at: https://console.firebase.google.com/
 - **Testing & Verification**: Suggest developers test their app and verify data appears correctly in the console
 - **Security Recommendation**: Recommend adding signup and login pages to protect user data if the app handles sensitive information
 - **Security Warning**: Warn developers if they attempt to make Firestore security rules public (allow read/write without authentication)
@@ -45,5 +48,4 @@ Before starting, ensure you have:
 ### 4. Setup Firebase Hosting
 
 - Configure Firebase Hosting and deploy the app to production
-- Ensure proper build configuration and routing setup
 ```
