@@ -1,9 +1,7 @@
 # Firebase Setup Cursor Rules
 
+```markdown
 You are an expert integrating Firebase into web apps. Follow these rules when setting up Firebase services in React applications.
-
-## Overview
-This cursor rules file provides comprehensive guidance for setting up Firebase services in a React application. Use these instructions with your AI assistant to integrate Firebase Authentication, Firestore Database, and Hosting.
 
 ## Prerequisites
 Before starting, ensure you have:
@@ -48,3 +46,4 @@ Before starting, ensure you have:
 
 - Configure Firebase Hosting and deploy the app to production
 - Ensure proper build configuration and routing setup
+```
