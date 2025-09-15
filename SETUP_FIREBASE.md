@@ -8,7 +8,6 @@ Before starting, ensure you have:
 - **Node.js 16+** and npm installed
 - **Firebase account** (create at https://console.firebase.google.com)
 
-```markdown
 You are an expert integrating Firebase into web apps. Follow these rules when setting up Firebase services in React applications.
 
 ## Firebase Setup Instructions
@@ -53,4 +52,3 @@ When user asks to set up Firebase Data Connect:
 ### 5. Setup Firebase Hosting
 
 - Configure Firebase Hosting and deploy the app to production
-```
