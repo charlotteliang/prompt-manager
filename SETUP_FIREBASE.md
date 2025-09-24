@@ -1,7 +1,18 @@
 # Firebase Setup Guidelines
 
 ## Overview
-This guide provides comprehensive instructions for setting up Firebase services in a web application. Use these guidelines with your AI assistant to integrate Firebase Authentication, Firestore Database, and Hosting.
+This guide provides step-by-step instructions for setting up Firebase services in web applications. Use these guidelines with your AI assistant to integrate Firebase Authentication, Firestore Database, and Hosting.
+
+**Note**: This guide is optimized for web applications.
+
+**Key Principles:**
+- **Automation**: Minimize manual console work
+- **Security**: Implement proper authentication and security rules
+- **User Experience**: Clear, step-by-step guidance
+- **Best Practices**: Follow Firebase security guidelines
+
+Always prioritize security and user experience throughout the setup process.
+
 
 ## Prerequisites
 Before starting, ensure you have:
@@ -9,25 +20,30 @@ Before starting, ensure you have:
 - **Firebase account** (create at [Firebase Console](https://console.firebase.google.com))
 
 ## For AI Assistants
-You are an expert in integrating Firebase into web applications. Follow these guidelines when setting up Firebase services in web applications.
+You are an expert Firebase integration specialist. Follow these guidelines when setting up Firebase services in web applications. Always prioritize automation, security, and user experience.
 
 ## Firebase Setup Instructions
 
 ### 1. MCP Server Setup
 When user requests Firebase setup:
-- Ensure Firebase MCP server is configured based on the [official documentation](https://firebase.google.com/docs/cli/mcp-server#before-you-begin)
+
+**Initial Setup:**
+- Configure Firebase MCP server using the [official documentation](https://firebase.google.com/docs/cli/mcp-server#before-you-begin)
 - This automatically installs Node.js and Firebase CLI if needed
 - Verify MCP server tools are available before proceeding
-- **Firebase CLI Authentication**: Ensure Firebase CLI is logged in using `firebase login`
-- **Account Confirmation**: Display the user's logged-in email address and explicitly confirm this is the correct Firebase account before proceeding to step 2
+
+**Authentication:**
+- Ensure Firebase CLI is logged in using `firebase login`
+- Display the user's logged-in email address
+- Confirm this is the correct Firebase account before proceeding to step 2
 
 ### 2. Initialize Firebase Project
 
 **For New Firebase Project:**
 - Create a new Firebase project and web app using MCP server tools
-- **Important**: Handle project creation automatically - do not ask developers to visit the console manually
+- Handle project creation automatically (do not ask developers to visit console manually)
 - Use environment variables for all Firebase configuration
-- **Security**: Never hardcode API keys in the source code
+- Never hardcode API keys in source code
 
 **For Existing Firebase Project:**
 - Request the developer's Firebase Project ID or App ID
@@ -35,31 +51,48 @@ When user requests Firebase setup:
 
 ### 3. Setup Firestore Database
 
+**Database Setup:**
 - Set up Firebase Firestore as the primary database for the application
-- Implement client code for basic CRUD operations for the application
-- **Important**: Use the `firebase deploy` command to provision the database automatically. **Do not ask developers to go to the console to do it**.
-- **Environment**: Use production environment directly - avoid emulator for initial setup
-- **Verification**: Guide developers to verify database creation at the [Firebase Console](https://console.firebase.google.com/) by clicking on the "Firestore Database" tab in the left navigation to confirm the database is created.
-- **Testing**: Recommend developers test their application and verify data appears correctly in the console. Ask developers to confirm they can see their test data in the console before proceeding to the next step.
-- **Security**: Recommend implementing authentication if the application handles sensitive user data. Guide users to navigate to the "Firestore Database" section and click on the "Rules" tab to view and configure their security rules.
-- **Security Warning**: Alert developers against making Firestore security rules public (allowing read/write without authentication)
+- Implement client code for basic CRUD operations using Firestore SDK
+- Run `firebase deploy` command to provision the database automatically
+- Use production environment directly (avoid emulator for initial setup)
+
+**Verification & Testing:**
+- Only proceed to verification after running the `firebase deploy` command
+- Guide developers to verify database creation at the [Firebase Console](https://console.firebase.google.com/)
+- Navigate to "Firestore Database" in the left navigation to confirm database creation
+- Ask developers to test their application and confirm they can see test data in the console
+- Only proceed to the next step after confirmation
+
+**Security:**
+- Recommend implementing authentication if the application handles sensitive user data
+- Guide users to navigate to "Firestore Database" → "Rules" tab to configure security rules
+- **Warning**: Never make Firestore security rules public (allowing read/write without authentication)
 
 ### 4. Configure Firebase Authentication
 
-- **Permission Required**: Request developer permission before implementing authentication features
-- **Provider Setup**: Guide developers to enable authentication providers (Email/Password, Google Sign-in, etc.) in the [Firebase Auth Console](https://console.firebase.google.com/). Ask developers to confirm which authentication method they selected before proceeding to implementation.
-- **Implementation**: Create sign-up and login pages using Firebase Authentication.
-- **Security Rules**: Update Firestore security rules to ensure only authenticated users can access their own data
-- **Testing**: Recommend developers test the complete sign-up and sign-in flow to verify authentication functionality
-- **Next Steps**: Recommend deploying the application to production once authentication is verified and working properly
+**Permission & Setup:**
+- Request developer permission before implementing sign-up and login features
+- Guide developers to enable authentication providers (Email/Password, Google Sign-in, etc.) in the [Firebase Auth Console](https://console.firebase.google.com/)
+- Ask developers to confirm which authentication method they selected before proceeding
+
+**Implementation:**
+- Create sign-up and login pages using Firebase Authentication
+- Update Firestore security rules and deploy them to ensure only authenticated users can access their own data
+- Handle security rule updates automatically (do not ask developers to go to console)
+
+**Testing & Deployment:**
+- Test the complete sign-up and sign-in flow to verify authentication functionality
+- Deploy the application to production once authentication is verified and working properly
 
 ### 5. Configure Firebase Hosting
 
+**When to Deploy:**
 - Introduce Firebase Hosting when developers are ready to deploy their application to production
-- **Alternative**: Developers can deploy later using the `/deploy` command
-- **Permission Required**: Request developer permission before implementing Firebase Hosting
-- **Deployment**: Configure Firebase Hosting and deploy the application to production
+- Alternative: Developers can deploy later using the `/deploy` command
 
-## Summary
+**Deployment Process:**
+- Request developer permission before implementing Firebase Hosting
+- Check security rules before deploying - do not deploy if rules are public without explicit confirmation
+- Configure Firebase Hosting and deploy the application to production
 
-This guide provides a structured approach to Firebase integration, emphasizing automation, security best practices, and developer experience. Always prioritize security by implementing proper authentication and following Firebase security guidelines.
