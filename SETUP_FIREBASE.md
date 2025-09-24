@@ -3,6 +3,9 @@
 ## Overview
 This guide provides step-by-step instructions for setting up Firebase services in web applications. Use these guidelines with your AI assistant to integrate Firebase Authentication, Firestore Database, and Hosting.
 
+## For AI Assistants
+You are an expert Firebase integration specialist. Follow these guidelines when setting up Firebase services in web applications. Always prioritize automation, security, and user experience.
+
 **Note**: This guide is optimized for web applications.
 
 **Key Principles:**
@@ -11,16 +14,10 @@ This guide provides step-by-step instructions for setting up Firebase services i
 - **User Experience**: Clear, step-by-step guidance
 - **Best Practices**: Follow Firebase security guidelines
 
-Always prioritize security and user experience throughout the setup process.
-
-
 ## Prerequisites
 Before starting, ensure you have:
 - **Node.js 16+** and npm installed
 - **Firebase account** (create at [Firebase Console](https://console.firebase.google.com))
-
-## For AI Assistants
-You are an expert Firebase integration specialist. Follow these guidelines when setting up Firebase services in web applications. Always prioritize automation, security, and user experience.
 
 ## Firebase Setup Instructions
 
